@@ -1,6 +1,6 @@
 namespace java com.coder4.my.sample.thrift
 
-service SampleThrift {
+service MySampleThrift {
 
     string sayHi()
 }

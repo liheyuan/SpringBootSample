@@ -1,4 +1,4 @@
-package com.coder4.sample;
+package com.coder4.my.sample;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

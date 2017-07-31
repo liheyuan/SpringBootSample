@@ -1,4 +1,4 @@
-namespace java com.coder4.sample.thrift
+namespace java com.coder4.my.sample.thrift
 
 service SampleThrift {
 

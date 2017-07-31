@@ -3,6 +3,10 @@ build
 out
 !gradle/wrapper/gradle-wrapper.jar
 
+### vim ###
+*.swo
+*.swp
+
 ### STS ###
 .apt_generated
 .classpath

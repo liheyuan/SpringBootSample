@@ -1,4 +1,4 @@
-package com.coder4.sample;
+package com.coder4.my.sample;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

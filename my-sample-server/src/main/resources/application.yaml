@@ -1,2 +1,8 @@
+
+# Use different management port as security rule
+management:
+    port: 8081
+    security.enabled: false
+
+# Enable shutdown
 endpoints.shutdown.enabled: true
-management.security.enabled: false

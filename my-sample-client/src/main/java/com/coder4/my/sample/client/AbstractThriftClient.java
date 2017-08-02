@@ -12,7 +12,11 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TTransport;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author coder4
@@ -33,6 +37,9 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
 
     private TServiceClientFactory<TCLIENT> clientFactory;
 
+    // For async call
+    private ExecutorService threadPool;
+
     public void init() {
         try {
             clientFactory = getThriftClientFactoryClass().newInstance();
@@ -43,6 +50,10 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
         if (!check()) {
             throw new RuntimeException("Client config failed check!");
         }
+
+        threadPool = new ThreadPoolExecutor(
+                10, 100, 0,
+                TimeUnit.MICROSECONDS, new LinkedBlockingDeque<>());
     }
 
     private boolean check() {
@@ -59,7 +70,7 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
     }
 
     @Override
-    public <TRET> TRET call(ThriftCallFunc<TCLIENT, TRET> tcallFunc) {
+    public <TRET> TRET call(ThriftCallFunc<TCLIENT, TRET> tcall) {
 
         // Step 1: get TTransport
         TTransport tpt = null;
@@ -72,7 +83,7 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
         // Step 2: get client & call
         try {
             TCLIENT tcli = createClient(tpt);
-            TRET ret = tcallFunc.call(tcli);
+            TRET ret = tcall.call(tcli);
             returnTransport(tpt);
             return ret;
         } catch (Exception e) {
@@ -81,20 +92,34 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
     }
 
     @Override
-    public void exec(ThriftExecFunc<TCLIENT> tclient) {
+    public void exec(ThriftExecFunc<TCLIENT> texec) {
+        // Step 1: get TTransport
+        TTransport tpt = null;
+        try {
+            tpt = borrowTransport();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
+        // Step 2: get client & exec
+        try {
+            TCLIENT tcli = createClient(tpt);
+            texec.exec(tcli);
+            returnTransport(tpt);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public <TRET> Future<TRET> asyncCall(ThriftCallFunc<TCLIENT, TRET> tclient) {
-        return null;
+    public <TRET> Future<TRET> asyncCall(ThriftCallFunc<TCLIENT, TRET> tcall) {
+        return threadPool.submit(() -> this.call(tcall));
     }
 
     @Override
-    public <TRET> Future<?> asyncExec(ThriftExecFunc<TCLIENT> tclient) {
-        return null;
+    public <TRET> Future<?> asyncExec(ThriftExecFunc<TCLIENT> texec) {
+        return threadPool.submit(() -> this.exec(texec));
     }
-
 
     public String getThriftServerHost() {
         return thriftServerHost;

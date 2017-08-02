@@ -25,9 +25,9 @@ public interface ThriftClient<TCLIENT extends TServiceClient> {
 
     /**
      * sync call without return value
-     * @param tclient thrift rpc client
+     * @param texec thrift rpc client
      */
-    void exec(ThriftExecFunc<TCLIENT> tclient);
+    void exec(ThriftExecFunc<TCLIENT> texec);
 
     /**
      * async call with return value
@@ -40,8 +40,8 @@ public interface ThriftClient<TCLIENT extends TServiceClient> {
 
     /**
      * asnyc call without return value
-     * @param tcall thrift rpc client call
+     * @param texec thrift rpc client call
      */
-    <TRET> Future<?> asyncExec(ThriftExecFunc<TCLIENT> tcall);
+    <TRET> Future<?> asyncExec(ThriftExecFunc<TCLIENT> texec);
 
 }

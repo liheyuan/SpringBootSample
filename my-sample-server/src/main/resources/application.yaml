@@ -6,3 +6,12 @@ management:
 
 # Enable shutdown
 endpoints.shutdown.enabled: true
+
+# Eureka server
+eureka:
+  instance:
+    appname: my-sample-thrift-server
+    nonSecurePort: 3000
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

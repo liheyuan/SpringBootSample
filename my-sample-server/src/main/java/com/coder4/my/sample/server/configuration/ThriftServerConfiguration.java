@@ -20,6 +20,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.ExecutorService;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Configuration
 @ConditionalOnBean(value = TProcessor.class, name = "thriftProcessor")
+@EnableEurekaClient()
 public class ThriftServerConfiguration implements InitializingBean, DisposableBean, Runnable {
 
     private static final int THRIFT_PORT = 3000;

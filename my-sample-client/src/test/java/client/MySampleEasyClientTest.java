@@ -4,19 +4,22 @@
  * Copyright 2017 fenbi.com. All rights reserved.
  * FENBI.COM PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package com.coder4.my.sample.client;
+package client;
 
+import com.coder4.my.sample.client.MySampleEasyClientBuilder;
+import com.coder4.my.sample.client.ThriftClient;
 import com.coder4.my.sample.thrift.MySampleThrift;
+import com.coder4.my.sample.thrift.MySampleThrift.Client;
 
 import java.util.concurrent.Future;
 
 /**
  * @author coder4
  */
-public class MySampleClientTest {
+public class MySampleEasyClientTest {
 
     public static void test1() {
-        ThriftClient<MySampleThrift.Client> client = MySampleClientBuilder
+        ThriftClient<Client> client = MySampleEasyClientBuilder
                 .buildClient("127.0.0.1", 3000);
 
         String ret = client.call(cli -> cli.sayHi());
@@ -24,7 +27,7 @@ public class MySampleClientTest {
     }
 
     public static void test2() throws Exception {
-        ThriftClient<MySampleThrift.Client> client = MySampleClientBuilder
+        ThriftClient<MySampleThrift.Client> client = MySampleEasyClientBuilder
                 .buildClient("127.0.0.1", 3000);
 
         Future<String> fRet = client.asyncCall(cli -> cli.sayHi());

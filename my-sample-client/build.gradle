@@ -22,6 +22,10 @@ dependencies {
 	compile project(':my-sample-thrift')
 
 	compile('org.apache.thrift:libthrift:0.9.3')
+
 	compile('org.springframework.boot:spring-boot-autoconfigure')
+
+	compile('org.springframework.cloud:spring-cloud-starter-eureka:1.3.1.RELEASE')
+
 }
 

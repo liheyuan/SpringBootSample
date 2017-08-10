@@ -4,7 +4,7 @@
  * Copyright 2017 fenbi.com. All rights reserved.
  * FENBI.COM PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package com.coder4.my.sample.client;
+package com.coder4.my.sample.client.common;
 
 import org.apache.thrift.TServiceClient;
 

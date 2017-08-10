@@ -4,8 +4,11 @@
  * Copyright 2017 fenbi.com. All rights reserved.
  * FENBI.COM PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package com.coder4.my.sample.client;
+package com.coder4.my.sample.client.common;
 
+import com.coder4.my.sample.client.ThriftCallFunc;
+import com.coder4.my.sample.client.ThriftClient;
+import com.coder4.my.sample.client.ThriftExecFunc;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.TServiceClientFactory;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -26,10 +29,6 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
     protected static final int THRIFT_CLIENT_DEFAULT_TIMEOUT = 5000;
 
     protected static final int THRIFT_CLIENT_DEFAULT_MAX_FRAME_SIZE = 1024 * 1024 * 16;
-
-    protected String thriftServerHost;
-
-    protected int thriftServerPort;
 
     private Class<?> thriftClass;
 
@@ -56,13 +55,7 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
                 TimeUnit.MICROSECONDS, new LinkedBlockingDeque<>());
     }
 
-    private boolean check() {
-        if (thriftServerHost == null || thriftServerHost.isEmpty()) {
-            return false;
-        }
-        if (thriftServerPort <= 0) {
-            return false;
-        }
+    protected boolean check() {
         if (thriftClass == null) {
             return false;
         }
@@ -119,22 +112,6 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
     @Override
     public <TRET> Future<?> asyncExec(ThriftExecFunc<TCLIENT> texec) {
         return threadPool.submit(() -> this.exec(texec));
-    }
-
-    public String getThriftServerHost() {
-        return thriftServerHost;
-    }
-
-    public void setThriftServerHost(String thriftServerHost) {
-        this.thriftServerHost = thriftServerHost;
-    }
-
-    public int getThriftServerPort() {
-        return thriftServerPort;
-    }
-
-    public void setThriftServerPort(int thriftServerPort) {
-        this.thriftServerPort = thriftServerPort;
     }
 
     protected TCLIENT createClient(TTransport transport) throws Exception {

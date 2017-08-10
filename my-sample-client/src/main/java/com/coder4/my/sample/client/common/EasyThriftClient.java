@@ -4,7 +4,7 @@
  * Copyright 2017 fenbi.com. All rights reserved.
  * FENBI.COM PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package com.coder4.my.sample.client;
+package com.coder4.my.sample.client.common;
 
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.transport.TFramedTransport;
@@ -17,6 +17,21 @@ import org.apache.thrift.transport.TTransport;
 public class EasyThriftClient<TCLIENT extends TServiceClient> extends AbstractThriftClient<TCLIENT> {
 
     private static final int EASY_THRIFT_BUFFER_SIZE = 1024 * 16;
+
+    protected String thriftServerHost;
+
+    protected int thriftServerPort;
+
+    @Override
+    protected boolean check() {
+        if (thriftServerHost == null || thriftServerHost.isEmpty()) {
+            return false;
+        }
+        if (thriftServerPort <= 0) {
+            return false;
+        }
+        return super.check();
+    }
 
     @Override
     protected TTransport borrowTransport() throws Exception {
@@ -42,6 +57,22 @@ public class EasyThriftClient<TCLIENT extends TServiceClient> extends AbstractTh
         if (transport != null && transport.isOpen()) {
             transport.close();
         }
+    }
+
+    public String getThriftServerHost() {
+        return thriftServerHost;
+    }
+
+    public void setThriftServerHost(String thriftServerHost) {
+        this.thriftServerHost = thriftServerHost;
+    }
+
+    public int getThriftServerPort() {
+        return thriftServerPort;
+    }
+
+    public void setThriftServerPort(int thriftServerPort) {
+        this.thriftServerPort = thriftServerPort;
     }
 
 }

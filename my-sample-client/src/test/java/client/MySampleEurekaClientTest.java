@@ -15,11 +15,17 @@ import com.coder4.my.sample.thrift.MySampleThrift;
  */
 public class MySampleEurekaClientTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         String serviceName = "my-sample-thrift-server";
         ThriftClient<MySampleThrift.Client> client = MySampleEurekaClientBuilder.buildClient(serviceName);
-        String str = client.call(cli -> cli.sayHi());
-        System.out.println(str);
+        long startTime = System.currentTimeMillis();
+        Thread.sleep(1000 * 35);
+        for (int i = 0; i < 10000; i++) {
+            String str = client.call(cli -> cli.sayHi());
+            // System.out.println(str);
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime - startTime);
     }
 
 }

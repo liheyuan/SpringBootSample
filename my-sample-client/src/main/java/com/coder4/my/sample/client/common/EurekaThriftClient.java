@@ -15,6 +15,8 @@ import com.netflix.discovery.DefaultEurekaClientConfig;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
+import com.netflix.discovery.EurekaEvent;
+import com.netflix.discovery.EurekaEventListener;
 import com.netflix.discovery.shared.Application;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.transport.TFramedTransport;
@@ -45,6 +47,13 @@ public class EurekaThriftClient<TCLIENT extends TServiceClient>
         // init eurekaClient by hand
         initializeApplicationInfoManager();
         initializeEurekaClient();
+        eurekaClient.registerEventListener(new EurekaEventListener() {
+            @Override
+            public void onEvent(EurekaEvent event) {
+                System.out.println("EurekaEvent Cache Updated");
+                System.out.println(event);
+            }
+        });
         // init random gen
         randomGenerator = new Random();
     }

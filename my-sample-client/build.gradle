@@ -18,6 +18,10 @@ sourceCompatibility = 1.8
 
 apply plugin: 'org.springframework.boot'
 
+bootRepackage {
+	enabled = false
+}
+
 dependencies {
 	compile project(':my-sample-thrift')
 

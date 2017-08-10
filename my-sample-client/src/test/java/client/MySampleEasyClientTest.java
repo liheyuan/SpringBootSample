@@ -22,8 +22,13 @@ public class MySampleEasyClientTest {
         ThriftClient<Client> client = MySampleEasyClientBuilder
                 .buildClient("127.0.0.1", 3000);
 
-        String ret = client.call(cli -> cli.sayHi());
-        System.out.println(ret);
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i<10000; i++) {
+            String ret = client.call(cli -> cli.sayHi());
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime - startTime);
+        //System.out.println(ret);
     }
 
     public static void test2() throws Exception {
@@ -36,7 +41,7 @@ public class MySampleEasyClientTest {
 
     public static void main(String [] args) throws Exception {
         test1();
-        test2();
+        //test2();
     }
 
 }

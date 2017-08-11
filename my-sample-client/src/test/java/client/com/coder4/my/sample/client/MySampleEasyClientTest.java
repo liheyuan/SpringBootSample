@@ -4,7 +4,7 @@
  * Copyright 2017 fenbi.com. All rights reserved.
  * FENBI.COM PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package client;
+package client.com.coder4.my.sample.client;
 
 import com.coder4.my.sample.client.MySampleEasyClientBuilder;
 import com.coder4.my.sample.client.ThriftClient;

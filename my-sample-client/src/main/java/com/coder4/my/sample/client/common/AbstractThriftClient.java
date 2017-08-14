@@ -63,48 +63,6 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
     }
 
     @Override
-    public <TRET> TRET call(ThriftCallFunc<TCLIENT, TRET> tcall) {
-
-        // Step 1: get TTransport
-        TTransport tpt = null;
-        try {
-            tpt = borrowTransport();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // Step 2: get client & call
-        try {
-            TCLIENT tcli = createClient(tpt);
-            TRET ret = tcall.call(tcli);
-            returnTransport(tpt);
-            return ret;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void exec(ThriftExecFunc<TCLIENT> texec) {
-        // Step 1: get TTransport
-        TTransport tpt = null;
-        try {
-            tpt = borrowTransport();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // Step 2: get client & exec
-        try {
-            TCLIENT tcli = createClient(tpt);
-            texec.exec(tcli);
-            returnTransport(tpt);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public <TRET> Future<TRET> asyncCall(ThriftCallFunc<TCLIENT, TRET> tcall) {
         return threadPool.submit(() -> this.call(tcall));
     }
@@ -143,12 +101,6 @@ public abstract class AbstractThriftClient<TCLIENT extends TServiceClient> imple
         }
         return null;
     }
-
-    protected abstract TTransport borrowTransport() throws Exception;
-
-    protected abstract void returnTransport(TTransport transport);
-
-    protected abstract void returnBrokenTransport(TTransport transport);
 
     public void setThriftClass(Class<?> thriftClass) {
         this.thriftClass = thriftClass;

@@ -6,6 +6,14 @@
  */
 package com.coder4.my.sample.client.configuration;
 
+import com.coder4.my.sample.client.MySampleEasyClientBuilder;
+import com.coder4.my.sample.client.MySampleEurekaClientBuilder;
+import com.coder4.my.sample.client.ThriftClient;
+import com.coder4.my.sample.thrift.MySampleThrift;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -13,5 +21,23 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class MySampleClientConfiguration {
+
+    @Bean(name = "mySampleThriftClient")
+    @ConditionalOnMissingBean(name = "mySampleThriftClient")
+    @ConditionalOnProperty(name = {"mySampleThriftServer.host", "mySampleThriftServer.port"})
+    public ThriftClient<MySampleThrift.Client> easyClient(
+            @Value("${mySampleThriftServer.host}") String host,
+            @Value("${mySampleThriftServer.port}") int port
+    ) {
+        // TODO LOG
+        return MySampleEasyClientBuilder.buildClient(host, port);
+    }
+
+    @Bean(name = "mySampleThriftClient")
+    @ConditionalOnMissingBean(name = "mySampleThriftClient")
+    public ThriftClient<MySampleThrift.Client> eurekaClient() {
+        // TODO LOG
+        return MySampleEurekaClientBuilder.buildClient("my-sample-thrift-server");
+    }
 
 }

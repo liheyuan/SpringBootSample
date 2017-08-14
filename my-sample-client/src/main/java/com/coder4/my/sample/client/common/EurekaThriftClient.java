@@ -6,6 +6,8 @@
  */
 package com.coder4.my.sample.client.common;
 
+import com.coder4.my.sample.client.ThriftCallFunc;
+import com.coder4.my.sample.client.ThriftExecFunc;
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
@@ -25,7 +27,6 @@ import org.apache.thrift.transport.TTransport;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * @author coder4
@@ -39,7 +40,9 @@ public class EurekaThriftClient<TCLIENT extends TServiceClient>
 
     private String thriftServiceName;
 
-    private Random randomGenerator;
+    private static int cnt = 0;
+
+    private TTransportPool connPool;
 
     @Override
     public void init() {
@@ -54,16 +57,63 @@ public class EurekaThriftClient<TCLIENT extends TServiceClient>
                 System.out.println(event);
             }
         });
-        // init random gen
-        randomGenerator = new Random();
+        // init pool
+        connPool = new TTransportPool(new TTransportPoolFactory());
     }
 
     @Override
-    protected TTransport borrowTransport() throws Exception {
+    public <TRET> TRET call(ThriftCallFunc<TCLIENT, TRET> tcall) {
+
+        // Step 1: get TTransport
+        TTransport tpt = null;
+        String key = getConnBorrowKey();
+        try {
+            tpt = connPool.borrowObject(key);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // Step 2: get client & call
+        try {
+            TCLIENT tcli = createClient(tpt);
+            TRET ret = tcall.call(tcli);
+            returnTransport(key, tpt);
+            return ret;
+        } catch (Exception e) {
+            returnBrokenTransport(key, tpt);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void exec(ThriftExecFunc<TCLIENT> texec) {
+        // Step 1: get TTransport
+        TTransport tpt = null;
+        String key = getConnBorrowKey();
+        try {
+
+            // borrow transport
+            tpt = connPool.borrowObject(key);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // Step 2: get client & exec
+        try {
+            TCLIENT tcli = createClient(tpt);
+            texec.exec(tcli);
+            returnTransport(key, tpt);
+        } catch (Exception e) {
+            returnBrokenTransport(key, tpt);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getConnBorrowKey() {
         // Get Application on eureka
         Application application = eurekaClient.getApplication(thriftServiceName);
         if (application == null) {
-            throw new RuntimeException("Application " + thriftServiceName +" not found on eureka.");
+            throw new RuntimeException("Application " + thriftServiceName + " not found on eureka.");
         }
 
         // Get Instances on eureka
@@ -73,36 +123,26 @@ public class EurekaThriftClient<TCLIENT extends TServiceClient>
         }
 
         // Get random instance
-        int idx = randomGenerator.nextInt(instances.size());
+        int idx = cnt++ % instances.size();
         InstanceInfo instanceSelected = instances.get(idx);
 
         // Get ip and port
         String ip = instanceSelected.getIPAddr();
         int port = instanceSelected.getPort();
-
-        // get transport
-        TSocket socket = new TSocket(ip, port, THRIFT_CLIENT_DEFAULT_TIMEOUT);
-
-        TTransport transport = new TFramedTransport(
-                socket, THRIFT_CLIENT_DEFAULT_MAX_FRAME_SIZE);
-
-        transport.open();
-
-        return transport;
+        String key = getConnPoolKey(ip, port);
+        return key;
     }
 
-    @Override
-    protected void returnTransport(TTransport transport) {
-        if (transport != null && transport.isOpen()) {
-            transport.close();
-        }
+    private void returnTransport(String key, TTransport transport) {
+        connPool.returnObject(key, transport);
     }
 
-    @Override
-    protected void returnBrokenTransport(TTransport transport) {
-        if (transport != null && transport.isOpen()) {
-            transport.close();
-        }
+    private void returnBrokenTransport(String key, TTransport transport) {
+        connPool.returnBrokenObject(key, transport);
+    }
+
+    private String getConnPoolKey(String host, int port) {
+        return host + ":" + port;
     }
 
     private synchronized void initializeApplicationInfoManager() {

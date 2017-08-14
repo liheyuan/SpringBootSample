@@ -6,6 +6,8 @@
  */
 package com.coder4.my.sample.client.common;
 
+import com.coder4.my.sample.client.ThriftCallFunc;
+import com.coder4.my.sample.client.ThriftExecFunc;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
@@ -33,8 +35,7 @@ public class EasyThriftClient<TCLIENT extends TServiceClient> extends AbstractTh
         return super.check();
     }
 
-    @Override
-    protected TTransport borrowTransport() throws Exception {
+    private TTransport borrowTransport() throws Exception {
         TSocket socket = new TSocket(thriftServerHost, thriftServerPort, THRIFT_CLIENT_DEFAULT_TIMEOUT);
 
         TTransport transport = new TFramedTransport(
@@ -45,17 +46,59 @@ public class EasyThriftClient<TCLIENT extends TServiceClient> extends AbstractTh
         return transport;
     }
 
-    @Override
-    protected void returnTransport(TTransport transport) {
+    private void returnTransport(TTransport transport) {
+        if (transport != null && transport.isOpen()) {
+            transport.close();
+        }
+    }
+
+    private void returnBrokenTransport(TTransport transport) {
         if (transport != null && transport.isOpen()) {
             transport.close();
         }
     }
 
     @Override
-    protected void returnBrokenTransport(TTransport transport) {
-        if (transport != null && transport.isOpen()) {
-            transport.close();
+    public <TRET> TRET call(ThriftCallFunc<TCLIENT, TRET> tcall) {
+
+        // Step 1: get TTransport
+        TTransport tpt = null;
+        try {
+            tpt = borrowTransport();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // Step 2: get client & call
+        try {
+            TCLIENT tcli = createClient(tpt);
+            TRET ret = tcall.call(tcli);
+            returnTransport(tpt);
+            return ret;
+        } catch (Exception e) {
+            returnBrokenTransport(tpt);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void exec(ThriftExecFunc<TCLIENT> texec) {
+        // Step 1: get TTransport
+        TTransport tpt = null;
+        try {
+            tpt = borrowTransport();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // Step 2: get client & exec
+        try {
+            TCLIENT tcli = createClient(tpt);
+            texec.exec(tcli);
+            returnTransport(tpt);
+        } catch (Exception e) {
+            returnBrokenTransport(tpt);
+            throw new RuntimeException(e);
         }
     }
 

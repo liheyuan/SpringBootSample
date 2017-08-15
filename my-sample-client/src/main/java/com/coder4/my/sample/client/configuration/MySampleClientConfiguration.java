@@ -8,8 +8,9 @@ package com.coder4.my.sample.client.configuration;
 
 import com.coder4.my.sample.client.MySampleEasyClientBuilder;
 import com.coder4.my.sample.client.MySampleEurekaClientBuilder;
-import com.coder4.my.sample.client.ThriftClient;
 import com.coder4.my.sample.thrift.MySampleThrift;
+import com.coder4.my.sample.thrift.MySampleThrift.Client;
+import com.coder4.sbmvt.thrift.client.ThriftClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -25,7 +26,7 @@ public class MySampleClientConfiguration {
     @Bean(name = "mySampleThriftClient")
     @ConditionalOnMissingBean(name = "mySampleThriftClient")
     @ConditionalOnProperty(name = {"mySampleThriftServer.host", "mySampleThriftServer.port"})
-    public ThriftClient<MySampleThrift.Client> easyClient(
+    public ThriftClient<Client> easyClient(
             @Value("${mySampleThriftServer.host}") String host,
             @Value("${mySampleThriftServer.port}") int port
     ) {

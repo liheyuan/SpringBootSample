@@ -6,9 +6,10 @@
  */
 package com.coder4.my.sample.client;
 
-import com.coder4.my.sample.client.common.EasyThriftClientBuilder;
 import com.coder4.my.sample.thrift.MySampleThrift;
 import com.coder4.my.sample.thrift.MySampleThrift.Client;
+import com.coder4.sbmvt.thrift.client.ThriftClient;
+import com.coder4.sbmvt.thrift.client.builder.EasyThriftClientBuilder;
 
 /**
  * @author coder4
@@ -22,7 +23,7 @@ public class MySampleEasyClientBuilder extends EasyThriftClientBuilder<Client> {
         setPort(port);
     }
 
-    public static ThriftClient<MySampleThrift.Client> buildClient(String host, int port) {
+    public static ThriftClient<Client> buildClient(String host, int port) {
         return new MySampleEasyClientBuilder(host, port).build();
     }
 

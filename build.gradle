@@ -7,12 +7,7 @@ subprojects {
 
 	repositories {
 		maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+		maven { url 'https://jitpack.io' }
 	}
 
-}
-
-apply plugin: 'idea'
-
-idea.module {
-	excludeDirs += [file("my-sample-client/build"), file("my-sample-client/out")]
 }

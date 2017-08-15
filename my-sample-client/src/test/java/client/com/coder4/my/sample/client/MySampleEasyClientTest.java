@@ -7,9 +7,9 @@
 package client.com.coder4.my.sample.client;
 
 import com.coder4.my.sample.client.MySampleEasyClientBuilder;
-import com.coder4.my.sample.client.ThriftClient;
 import com.coder4.my.sample.thrift.MySampleThrift;
 import com.coder4.my.sample.thrift.MySampleThrift.Client;
+import com.coder4.sbmvt.thrift.client.ThriftClient;
 
 import java.util.concurrent.Future;
 

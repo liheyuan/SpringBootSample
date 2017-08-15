@@ -7,8 +7,8 @@
 package client.com.coder4.my.sample.client;
 
 import com.coder4.my.sample.client.MySampleEurekaClientBuilder;
-import com.coder4.my.sample.client.ThriftClient;
-import com.coder4.my.sample.thrift.MySampleThrift;
+import com.coder4.my.sample.thrift.MySampleThrift.Client;
+import com.coder4.sbmvt.thrift.client.ThriftClient;
 
 /**
  * @author coder4
@@ -17,11 +17,14 @@ public class MySampleEurekaClientTest {
 
     public static void main(String[] args) throws InterruptedException {
         String serviceName = "my-sample-thrift-server";
-        ThriftClient<MySampleThrift.Client> client = MySampleEurekaClientBuilder.buildClient(serviceName);
+        ThriftClient<Client> client = MySampleEurekaClientBuilder.buildClient(serviceName);
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 100000; i++) {
-            String str = client.call(cli -> cli.sayHi());
-            // System.out.println(str);
+            try {
+                String str = client.call(cli -> cli.sayHi());
+            } catch (Exception e) {
+                i--;
+            }
         }
         long endTime = System.currentTimeMillis();
         System.out.println(endTime - startTime);

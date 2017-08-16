@@ -6,6 +6,7 @@
  */
 package com.coder4.my.sample.server.configuration;
 
+import com.netflix.discovery.EurekaClient;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.ExecutorService;
@@ -65,6 +67,9 @@ public class ThriftServerConfiguration implements InitializingBean, DisposableBe
     @Autowired
     private TProcessor processor;
 
+    @Autowired
+    private EurekaClient eurekaClient;
+
     public TServer build() throws TTransportException {
         TNonblockingServerSocket.NonblockingAbstractServerSocketArgs socketArgs =
                 new TNonblockingServerSocket.NonblockingAbstractServerSocketArgs();
@@ -108,6 +113,10 @@ public class ThriftServerConfiguration implements InitializingBean, DisposableBe
 
     @Override
     public void destroy() throws Exception {
+        // Unregister from eureka server & Sleep for 6 seconds
+        eurekaClient.shutdown();
+        Thread.sleep(TimeUnit.SECONDS.toMillis(6));
+
         threadPool.shutdown();
         server.stop();
     }

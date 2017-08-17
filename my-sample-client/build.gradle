@@ -24,7 +24,7 @@ bootRepackage {
 }
 
 dependencies {
-    compile project(':my-sample-thrift')
+    compile project(':my-sample-common')
 
     compile('org.springframework.boot:spring-boot-autoconfigure')
 

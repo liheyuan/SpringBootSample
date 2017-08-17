@@ -16,7 +16,7 @@ sourceCompatibility = 1.8
 apply plugin: 'org.springframework.boot'
 
 dependencies {
-	compile project(':my-sample-thrift')
+	compile project(':my-sample-common')
 
 	// compile('org.springframework.boot:spring-boot-starter-jdbc')
 	compile('org.springframework.boot:spring-boot-starter-web')

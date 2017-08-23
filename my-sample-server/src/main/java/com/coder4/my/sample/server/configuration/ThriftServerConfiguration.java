@@ -9,6 +9,8 @@ package com.coder4.my.sample.server.configuration;
 import com.coder4.sbmvt.thrift.server.ThriftServerRunnable;
 import com.netflix.discovery.EurekaClient;
 import org.apache.thrift.TProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 @EnableEurekaClient()
 public class ThriftServerConfiguration implements InitializingBean, DisposableBean {
 
+    private Logger LOG = LoggerFactory.getLogger(ThriftServerConfiguration.class);
+
     @Autowired
     private TProcessor processor;
 
@@ -40,7 +44,11 @@ public class ThriftServerConfiguration implements InitializingBean, DisposableBe
     public void destroy() throws Exception {
         // Unregister from eureka server & Sleep for 6 seconds
         eurekaClient.shutdown();
+        LOG.info("ThriftServerConfiguration destroy, shutdown eureka client.");
+
         Thread.sleep(TimeUnit.SECONDS.toMillis(6));
+
+        LOG.info("ThriftServerConfiguration destroy, shutdown rpc server.");
 
         thriftServer.stop();
     }

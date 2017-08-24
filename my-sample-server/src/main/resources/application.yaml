@@ -21,6 +21,15 @@ eureka:
     lease-expiration-duration-in-seconds: 10
   client.serviceUrl.defaultZone: http://localhost:8761/eureka/
 
+# DB
+mySample.datasource:
+  # For more see http://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html#Common_Attributes
+  username: root
+  password: sbmvt123
+  testOnBorrow: true
+  validationQuery: SELECT 1
+  url: jdbc:mysql://sbmvt-mysql-test:3306/my_sample
+
 # Profiles
 spring:
   profiles.active: test
@@ -39,5 +48,9 @@ logging:
   pattern.console:
   file: my-sample-server.log
 
+# eureka online
 eureka:
   client.serviceUrl.defaultZone: http://eureka-server-online:8761/eureka/
+
+# DB Online
+mySample.datasource.url: jdbc:mysql://sbmvt-mysql-online:3306/my_sample

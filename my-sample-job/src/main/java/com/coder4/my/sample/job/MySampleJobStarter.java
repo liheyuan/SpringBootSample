@@ -1,8 +1,8 @@
 /**
  * @(#)MySampleJobStarter.java, Aug 21, 2017.
  * <p>
- * Copyright 2017 fenbi.com. All rights reserved.
- * FENBI.COM PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2017 coder4.com. All rights reserved.
+ * CODER4.COM PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.coder4.my.sample.job;
 

@@ -1,5 +1,8 @@
 package com.coder4.my.sample.server.configuration;
 
+// Uncomment following code to enable jdbc
+
+/*
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,9 +14,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
 
-/**
- * @author coder4
- */
 @Configuration
 public class DBConfiguration {
 
@@ -31,3 +31,4 @@ public class DBConfiguration {
         return new NamedParameterJdbcTemplate(dataSource);
     }
 }
+*/
